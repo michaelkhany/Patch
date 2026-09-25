@@ -1,0 +1,313 @@
+{
+  "name": "patch-code",
+  "displayName": "Patch Code",
+  "description": "An autonomous coding agent for VS Code built on Michael Bidollahkhani's patch mechanism (the one behind DAYA Studio's iTailor): bring your own OpenAI-compatible model (GWDG/KISSKI, OpenAI, DeepSeek, Ollama, LM Studio, llama.cpp, vLLM…), pick a model, and let it read, write, run and repair code in any language - with Claude Code-style permissions, settings files and PATCHCODE.md.",
+  "version": "0.1.0",
+  "publisher": "michael-bidollahkhani",
+  "author": {
+    "name": "Michael Bidollahkhani"
+  },
+  "license": "MIT",
+  "copyright": "Copyright (c) 2026 Michael Bidollahkhani. All rights reserved.",
+  "private": true,
+  "engines": {
+    "vscode": "^1.90.0",
+    "node": ">=20"
+  },
+  "categories": [
+    "AI",
+    "Programming Languages",
+    "Other"
+  ],
+  "keywords": [
+    "ai",
+    "agent",
+    "copilot",
+    "llm",
+    "openai-compatible",
+    "itailor",
+    "daya"
+  ],
+  "icon": "media/icon.png",
+  "main": "./src/extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "description": "In an untrusted workspace Patch Code runs in plan mode (read-only) and does not execute commands or scripts."
+    },
+    "virtualWorkspaces": false
+  },
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "patchCode",
+          "title": "Patch Code",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "patchCode": [
+        {
+          "type": "webview",
+          "id": "patchCode.chatView",
+          "name": "Chat",
+          "icon": "media/icon.svg",
+          "contextualTitle": "Patch Code"
+        }
+      ]
+    },
+    "commands": [
+      { "command": "patchCode.openChat", "title": "Open Chat", "category": "Patch Code", "icon": "$(comment-discussion)" },
+      { "command": "patchCode.newConversation", "title": "New Conversation", "category": "Patch Code", "icon": "$(add)" },
+      { "command": "patchCode.configure", "title": "Configure Provider & API Key", "category": "Patch Code", "icon": "$(gear)" },
+      { "command": "patchCode.setApiKey", "title": "Set API Key", "category": "Patch Code" },
+      { "command": "patchCode.clearApiKey", "title": "Clear API Key", "category": "Patch Code" },
+      { "command": "patchCode.selectModel", "title": "Select Model", "category": "Patch Code", "icon": "$(server)" },
+      { "command": "patchCode.refreshModels", "title": "Reload Models & Probe Tool Support", "category": "Patch Code", "icon": "$(refresh)" },
+      { "command": "patchCode.selectPermissionMode", "title": "Select Permission Mode", "category": "Patch Code", "icon": "$(shield)" },
+      { "command": "patchCode.stop", "title": "Stop Current Run", "category": "Patch Code", "icon": "$(debug-stop)" },
+      { "command": "patchCode.askAboutSelection", "title": "Ask About Selection", "category": "Patch Code" },
+      { "command": "patchCode.explainSelection", "title": "Explain Selection", "category": "Patch Code" },
+      { "command": "patchCode.improveSelection", "title": "Improve Selection", "category": "Patch Code" },
+      { "command": "patchCode.fixDiagnostics", "title": "Fix Problems in This File", "category": "Patch Code" },
+      { "command": "patchCode.fixDiagnostic", "title": "Fix This Problem", "category": "Patch Code" },
+      { "command": "patchCode.applyPatches", "title": "Apply @patch Requests in This File", "category": "Patch Code", "icon": "$(wand)" },
+      { "command": "patchCode.insertPatchRequest", "title": "Insert @patch Request", "category": "Patch Code" },
+      { "command": "patchCode.runAndRepairFile", "title": "Run & Repair This File", "category": "Patch Code", "icon": "$(debug-rerun)" },
+      { "command": "patchCode.showKnowledgeGraph", "title": "Show Knowledge Graph of This File", "category": "Patch Code" },
+      { "command": "patchCode.initProject", "title": "Initialize PATCHCODE.md", "category": "Patch Code" },
+      { "command": "patchCode.openSettingsFile", "title": "Open .patchcode/settings.json", "category": "Patch Code" },
+      { "command": "patchCode.openUserSettingsFile", "title": "Open ~/.patchcode/settings.json", "category": "Patch Code" },
+      { "command": "patchCode.showCost", "title": "Show Token Usage", "category": "Patch Code" },
+      { "command": "patchCode.showOutput", "title": "Show Output Log", "category": "Patch Code" }
+    ],
+    "menus": {
+      "view/title": [
+        { "command": "patchCode.newConversation", "when": "view == patchCode.chatView", "group": "navigation@1" },
+        { "command": "patchCode.selectModel", "when": "view == patchCode.chatView", "group": "navigation@2" },
+        { "command": "patchCode.selectPermissionMode", "when": "view == patchCode.chatView", "group": "navigation@3" },
+        { "command": "patchCode.configure", "when": "view == patchCode.chatView", "group": "navigation@4" }
+      ],
+      "editor/context": [
+        { "submenu": "patchCode.editorSubmenu", "group": "1_modification@9" }
+      ],
+      "patchCode.editorSubmenu": [
+        { "command": "patchCode.askAboutSelection", "when": "editorHasSelection", "group": "a@1" },
+        { "command": "patchCode.explainSelection", "when": "editorHasSelection", "group": "a@2" },
+        { "command": "patchCode.improveSelection", "when": "editorHasSelection", "group": "a@3" },
+        { "command": "patchCode.applyPatches", "group": "b@1" },
+        { "command": "patchCode.insertPatchRequest", "group": "b@2" },
+        { "command": "patchCode.runAndRepairFile", "group": "b@3" },
+        { "command": "patchCode.fixDiagnostics", "group": "c@1" },
+        { "command": "patchCode.showKnowledgeGraph", "group": "c@2" }
+      ],
+      "editor/title": [
+        { "command": "patchCode.applyPatches", "when": "resourceScheme == file", "group": "navigation@9" }
+      ],
+      "commandPalette": [
+        { "command": "patchCode.fixDiagnostic", "when": "false" }
+      ]
+    },
+    "submenus": [
+      { "id": "patchCode.editorSubmenu", "label": "Patch Code" }
+    ],
+    "keybindings": [
+      { "command": "patchCode.openChat", "key": "ctrl+alt+p", "mac": "cmd+alt+p" },
+      { "command": "patchCode.askAboutSelection", "key": "ctrl+alt+k", "mac": "cmd+alt+k", "when": "editorHasSelection" },
+      { "command": "patchCode.applyPatches", "key": "ctrl+alt+enter", "mac": "cmd+alt+enter", "when": "editorTextFocus" },
+      { "command": "patchCode.stop", "key": "ctrl+alt+escape", "mac": "cmd+alt+escape" }
+    ],
+    "configuration": {
+      "title": "Patch Code",
+      "properties": {
+        "patchCode.provider": {
+          "type": "string",
+          "enum": ["gwdg", "openai", "deepseek", "ollama", "lmstudio", "llamacpp", "custom"],
+          "enumDescriptions": [
+            "GWDG · KISSKI / AcademicCloud (https://chat-ai.academiccloud.de/v1)",
+            "OpenAI (https://api.openai.com/v1)",
+            "DeepSeek (https://api.deepseek.com/v1)",
+            "Ollama running locally (http://127.0.0.1:11434/v1)",
+            "LM Studio running locally (http://127.0.0.1:1234/v1)",
+            "llama.cpp llama-server running locally (http://127.0.0.1:8089/v1)",
+            "Any other OpenAI-compatible endpoint; set patchCode.serviceAddress"
+          ],
+          "default": "gwdg",
+          "description": "Which OpenAI-compatible provider to talk to. Picking one fills in the service address; the API key is stored in VS Code's secret storage (Patch Code: Set API Key)."
+        },
+        "patchCode.serviceAddress": {
+          "type": "string",
+          "default": "https://chat-ai.academiccloud.de/v1",
+          "description": "Base URL of the OpenAI-compatible API (…/v1). Overrides the provider preset."
+        },
+        "patchCode.model": {
+          "type": "string",
+          "default": "auto",
+          "description": "Model id, or \"auto\" to use the best tool-capable model the key can reach (largest context window). Use Patch Code: Select Model to browse."
+        },
+        "patchCode.apiKeyEnv": {
+          "type": "string",
+          "default": "",
+          "description": "Name of an environment variable holding the API key (used when no key is stored in secret storage). PATCHCODE_API_KEY and OPENAI_API_KEY are always tried."
+        },
+        "patchCode.permissionMode": {
+          "type": "string",
+          "enum": ["default", "acceptEdits", "plan", "bypassPermissions"],
+          "enumDescriptions": [
+            "Read-only tools run immediately; edits, commands, scripts and installs ask first.",
+            "File edits are applied without asking; commands, scripts and installs still ask.",
+            "Read-only: the agent may only inspect the workspace and produce a plan.",
+            "Nothing asks. Only for sandboxes you do not mind losing."
+          ],
+          "default": "default",
+          "description": "How much the agent may do without asking (same modes as Claude Code)."
+        },
+        "patchCode.permissions.allow": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "markdownDescription": "Rules that skip the prompt, e.g. `Shell(npm test *)`, `Shell(git:*)`, `Edit(src/**)`, `WebSearch`. Merged with rules from `.patchcode/settings.json`."
+        },
+        "patchCode.permissions.deny": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "markdownDescription": "Rules that are always refused, e.g. `Write(.env)`, `Shell(git push*)`. Deny wins over allow."
+        },
+        "patchCode.permissions.ask": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "markdownDescription": "Rules that always prompt even in acceptEdits mode, e.g. `Edit(package.json)`."
+        },
+        "patchCode.maxSteps": {
+          "type": "integer",
+          "default": 40,
+          "minimum": 1,
+          "maximum": 400,
+          "description": "Maximum tool calls per user message before the agent must answer."
+        },
+        "patchCode.maxIterations": {
+          "type": "integer",
+          "default": 6,
+          "minimum": 0,
+          "maximum": 50,
+          "description": "Repair attempts for a patch or a file before Patch Code stops and hands you the error."
+        },
+        "patchCode.commandTimeoutSeconds": {
+          "type": "integer",
+          "default": 120,
+          "description": "Seconds a Shell command may run."
+        },
+        "patchCode.runTimeoutSeconds": {
+          "type": "integer",
+          "default": 180,
+          "description": "Seconds a generated script (RunCode / Run & Repair) may run."
+        },
+        "patchCode.modelTimeoutSeconds": {
+          "type": "integer",
+          "default": 180,
+          "description": "Seconds to wait for one model response."
+        },
+        "patchCode.permissionTimeoutSeconds": {
+          "type": "integer",
+          "default": 300,
+          "description": "Seconds a permission prompt waits for an answer. No answer is a denial."
+        },
+        "patchCode.maxTokens": {
+          "type": "integer",
+          "default": 4000,
+          "description": "max_tokens for each model response."
+        },
+        "patchCode.temperature": {
+          "type": "number",
+          "default": 0.1,
+          "description": "Sampling temperature."
+        },
+        "patchCode.contextTokens": {
+          "type": "integer",
+          "default": 60000,
+          "description": "Approximate token budget for the conversation sent to the model; older tool results are trimmed beyond it."
+        },
+        "patchCode.toolCalling": {
+          "type": "string",
+          "enum": ["auto", "native", "text"],
+          "default": "auto",
+          "description": "auto: probe the model once and use native function calling when supported, otherwise the text protocol. native/text force one."
+        },
+        "patchCode.streaming": {
+          "type": "boolean",
+          "default": true,
+          "description": "Stream model output into the chat."
+        },
+        "patchCode.contextFiles": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": ["PATCHCODE.md"],
+          "description": "Instruction files loaded from the workspace (and its parent folders and ~/.patchcode) into every conversation, like CLAUDE.md."
+        },
+        "patchCode.includeOpenEditors": {
+          "type": "boolean",
+          "default": true,
+          "description": "Tell the model which files are open and what is selected."
+        },
+        "patchCode.includeDiagnostics": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include the Problems panel (errors and warnings) in the model's context."
+        },
+        "patchCode.webSearch": {
+          "type": "boolean",
+          "default": true,
+          "description": "Allow WebSearch / WebFetch (DuckDuckGo, no account)."
+        },
+        "patchCode.sandbox.confineToWorkspace": {
+          "type": "boolean",
+          "default": true,
+          "description": "Refuse to read or write files outside the workspace folder."
+        },
+        "patchCode.sandbox.allowNetwork": {
+          "type": "boolean",
+          "default": true,
+          "description": "Allow the web tools to reach the network."
+        },
+        "patchCode.autoModelExclude": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "Model ids the Auto picker must skip."
+        },
+        "patchCode.env": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "default": {},
+          "description": "Environment variables added to every command and script the agent runs."
+        },
+        "patchCode.language": {
+          "type": "string",
+          "default": "auto",
+          "description": "Default language for a @patch request in a file whose language VS Code cannot determine (auto = infer)."
+        }
+      }
+    },
+    "languages": [],
+    "jsonValidation": [
+      { "fileMatch": [".patchcode/settings.json", ".patchcode/settings.local.json"], "url": "./schemas/settings.schema.json" }
+    ]
+  },
+  "scripts": {
+    "test": "node test/check-syntax.js && node --test test/",
+    "package": "vsce package --no-dependencies",
+    "install-local": "vsce package --no-dependencies && code --install-extension patch-code-0.1.0.vsix --force"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/vscode": "^1.90.0",
+    "@vscode/vsce": "^3.2.0"
+  }
+}
