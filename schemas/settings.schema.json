@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Patch Code settings",
+  "description": "Settings for the Patch Code VS Code extension. Layers: ~/.patchcode/settings.json (user), .patchcode/settings.json (project, committed), .patchcode/settings.local.json (local, git-ignored). Later layers win; permissions, env and hooks merge.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "provider": { "type": "string", "enum": ["gwdg", "openai", "deepseek", "ollama", "lmstudio", "llamacpp", "custom"] },
+    "serviceAddress": { "type": "string", "description": "Base URL of the OpenAI-compatible API (…/v1)." },
+    "model": { "type": "string", "description": "Model id or \"auto\"." },
+    "apiKeyEnv": { "type": "string", "description": "Environment variable that holds the API key. Never put the key itself in a committed file." },
+    "permissionMode": { "type": "string", "enum": ["default", "acceptEdits", "plan", "bypassPermissions"] },
+    "permissions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "allow": { "type": "array", "items": { "type": "string" }, "description": "Rules like Shell(npm test *), Edit(src/**), WebSearch." },
+        "deny": { "type": "array", "items": { "type": "string" } },
+        "ask": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "maxSteps": { "type": "integer", "minimum": 1, "maximum": 400 },
+    "maxIterations": { "type": "integer", "minimum": 0, "maximum": 50 },
+    "commandTimeoutSeconds": { "type": "integer" },
+    "runTimeoutSeconds": { "type": "integer" },
+    "modelTimeoutSeconds": { "type": "integer" },
+    "permissionTimeoutSeconds": { "type": "integer" },
+    "maxTokens": { "type": "integer" },
+    "temperature": { "type": "number" },
+    "contextTokens": { "type": "integer" },
+    "toolCalling": { "type": "string", "enum": ["auto", "native", "text"] },
+    "streaming": { "type": "boolean" },
+    "contextFiles": { "type": "array", "items": { "type": "string" } },
+    "includeOpenEditors": { "type": "boolean" },
+    "includeDiagnostics": { "type": "boolean" },
+    "webSearch": { "type": "boolean" },
+    "sandbox": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "confineToWorkspace": { "type": "boolean" },
+        "allowNetwork": { "type": "boolean" }
+      }
+    },
+    "autoModelExclude": { "type": "array", "items": { "type": "string" } },
+    "env": { "type": "object", "additionalProperties": { "type": "string" } },
+    "language": { "type": "string" },
+    "hooks": {
+      "type": "object",
+      "description": "PreToolUse / PostToolUse / Stop hooks. Each entry: {matcher, hooks:[{type:'command', command}]}. Exit code 2 from a PreToolUse hook blocks the tool.",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "matcher": { "type": "string", "description": "Tool name, regex, or empty for all." },
+            "hooks": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["type", "command"],
+                "properties": {
+                  "type": { "type": "string", "enum": ["command"] },
+                  "command": { "type": "string" },
+                  "timeout": { "type": "integer", "description": "Seconds." }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
