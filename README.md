@@ -2,7 +2,7 @@
 
 **An autonomous coding agent for Visual Studio Code, built on Michael Bidollahkhani's patch mechanism, that works with any OpenAI-compatible model you bring.**
 
-A personal project of **Michael Bidollahkhani**. Copyright (c) 2026 Michael Bidollahkhani, all rights reserved, released under the [MIT License](LICENSE).
+A personal project of **Michael Bidollahkhani**. Copyright (c) 2024 Michael Bidollahkhani, all rights reserved, released under the [MIT License](LICENSE).
 
 The idea behind Patch Code is Michael's: a *patch* is a natural-language instruction that becomes code which is written, **run against the real environment**, read back from its actual error output, and repaired until it works - never handed over unverified. The mechanism was first applied in the *iTailor* engine of [DAYA Studio](../daya-pro-main), where it drives data-analysis Patchbooks; Patch Code is its standalone form for a code editor. Around that loop sit the things a coding agent in an editor needs - file tools, a shell, web search, diagnostics from VS Code - governed by Claude Code-style permissions and settings files.
 
